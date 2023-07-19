@@ -1,5 +1,7 @@
 import axios from "axios";
 import { JSDOM } from "jsdom";
+import Player from "../models/Player";
+import e from "express";
 
 const baseURL = "https://www.baseball-reference.com/teams/";
 
@@ -106,6 +108,14 @@ const scrapeTeamData = async () => {
                 player[stats[j - 1]] = Number(cell.textContent?.trim()) || null;
               }
             }
+          }
+
+          try {
+            Player.create(player).then(() => {
+              console.log(player.name);
+            });
+          } catch (error) {
+            console.log(error);
           }
 
           console.log(player);
