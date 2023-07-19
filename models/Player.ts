@@ -13,7 +13,7 @@ const Player = sequelize.define("Player", {
   R: DataTypes.INTEGER,
   H: DataTypes.INTEGER,
   doubles: DataTypes.INTEGER,
-  tripples: DataTypes.INTEGER,
+  triples: DataTypes.INTEGER,
   HR: DataTypes.INTEGER,
   RBI: DataTypes.INTEGER,
   SB: DataTypes.INTEGER,

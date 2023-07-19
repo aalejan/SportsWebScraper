@@ -1,7 +1,5 @@
 import axios from "axios";
 import { JSDOM } from "jsdom";
-import Player from "../models/Player";
-import PlayerType from "../types/PlayerType";
 
 const baseURL = "https://www.baseball-reference.com/teams/";
 
@@ -34,7 +32,7 @@ const stats = [
   "IBB",
 ];
 
-const statToFieldMap: { [key: string]: keyof PlayerType } = {
+const statToFieldMap = {
   pos: "pos",
   age: "age",
   G: "G",
@@ -42,8 +40,8 @@ const statToFieldMap: { [key: string]: keyof PlayerType } = {
   AB: "AB",
   R: "R",
   H: "H",
-  "2B": "doubles",
-  "3B": "tripples",
+  "2B": "twoB",
+  "3B": "threeB",
   HR: "HR",
   RBI: "RBI",
   SB: "SB",
@@ -87,7 +85,7 @@ const scrapeTeamData = async () => {
         if (cells.length >= stats.length) {
           // +2 because we're skipping the first two cells
           // Create a player object
-          let player: Partial<PlayerType> = {
+          let player: { [key: string]: string | null | Number } = {
             name: cells[1].textContent?.trim() || "",
             pos: cells[0].textContent?.trim() || "",
           };
@@ -100,17 +98,14 @@ const scrapeTeamData = async () => {
 
             // If the cell exists, assign its textContent to player
             if (cell) {
-              const statKey = statToFieldMap[stats[j - 1]];
-              player[statKey] = cell.textContent?.trim() || "";
+              if (stats[j - 1] === "3B") {
+                player["triples"] = Number(cell.textContent?.trim()) || null;
+              } else if (stats[j - 1] === "2B") {
+                player["doubles"] = Number(cell.textContent?.trim()) || null;
+              } else {
+                player[stats[j - 1]] = Number(cell.textContent?.trim()) || null;
+              }
             }
-          }
-
-          // Insert the player into the database
-          try {
-            const newPlayer = await Player.create(player);
-            console.log(`Inserted player ${newPlayer.dataValues.name}`);
-          } catch (error) {
-            console.error(`Error inserting player ${player.name}: ${error}`);
           }
 
           console.log(player);

@@ -1,4 +1,7 @@
 import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
+import fs from "fs";
+dotenv.config();
 
 const sequelize = new Sequelize(process.env.DATABASE_URL as string, {
   dialect: "postgres",
@@ -11,13 +14,15 @@ const sequelize = new Sequelize(process.env.DATABASE_URL as string, {
   },
 });
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection has been established successfully.");
-  })
-  .catch((err) => {
-    console.error("Unable to connect to the database:", err);
-  });
+export const testConnection = () => {
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log("Connection has been established successfully.");
+    })
+    .catch((err) => {
+      console.error("Unable to connect to the database:", err);
+    });
+};
 
 export default sequelize;
