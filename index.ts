@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 testConnection();
 
 sequelize
-  .sync()
+  .sync({ force: true })
   .then(() => {
     console.log("Database & models synced successfully.");
 

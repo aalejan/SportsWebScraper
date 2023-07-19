@@ -34,35 +34,6 @@ const stats = [
   "IBB",
 ];
 
-const statToFieldMap = {
-  pos: "pos",
-  age: "age",
-  G: "G",
-  PA: "PA",
-  AB: "AB",
-  R: "R",
-  H: "H",
-  "2B": "twoB",
-  "3B": "threeB",
-  HR: "HR",
-  RBI: "RBI",
-  SB: "SB",
-  CS: "CS",
-  BB: "BB",
-  SO: "SO",
-  batting_avg: "battingAvg",
-  onbase_perc: "onbasePerc",
-  slugging_perc: "sluggingPerc",
-  onbase_plus_slugging: "onbasePlusSlugging",
-  onbase_plus_slugging_plus: "onbasePlusSluggingPlus",
-  TB: "TB",
-  GIDP: "GIDP",
-  HBP: "HBP",
-  SH: "SH",
-  SF: "SF",
-  IBB: "IBB",
-};
-
 const scrapeTeamData = async () => {
   const url = `${baseURL}${"MIA"}/2023.shtml`;
 
@@ -76,7 +47,7 @@ const scrapeTeamData = async () => {
       const rows = teamBatting.querySelectorAll("tr");
 
       // Skip the first row (headers)
-      for (let i = 1; i < rows.length; i++) {
+      for (let i = 1; i < rows.length - 3; i++) {
         const row = rows[i];
 
         // Get all the cells in the row
