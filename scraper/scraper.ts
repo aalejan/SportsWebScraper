@@ -1,8 +1,9 @@
 import axios from "axios";
 import { JSDOM } from "jsdom";
 import Player from "../models/Player";
+import { resolve } from "path";
 
-const baseURL = "https://www.baseball-reference.com/teams/";
+const baseURL = "https://www.baseball-reference.com";
 
 const stats = [
   "pos",
@@ -69,7 +70,7 @@ const mlbTeams = [
 const scrapeTeamData = async () => {
   try {
     for (const team of mlbTeams) {
-      const url = `${baseURL}${team}/2023.shtml`;
+      const url = `${baseURL}/teams/${team}/2023.shtml`;
       const { data } = await axios.get(url);
 
       const dom = new JSDOM(data);
@@ -87,45 +88,72 @@ const scrapeTeamData = async () => {
 
           // Get all the cells in the row
           const cells = [...row.querySelectorAll("td")];
+          if (cells.length === 0) {
+            continue;
+          }
 
           // Make sure there are enough cells for our data
+          const playerStatsPage =
+            <HTMLAnchorElement>cells[1]?.querySelector("strong > a") === null
+              ? <HTMLAnchorElement>cells[1].querySelector("a")
+              : <HTMLAnchorElement>cells[1].querySelector("strong > a");
 
-          if (cells.length >= stats.length) {
-            // Create a player object
-            let player: { [key: string]: string | null | Number } = {
-              name: cells[1].textContent?.trim() || "",
-              pos: cells[0].textContent?.trim() || "",
-            };
+          const playerLink = playerStatsPage?.href;
 
-            // Assign each stat a value from the corresponding cell
-            for (let j = 2; j < cells.length; j++) {
-              const cell = cells.find(
-                (cell) => cell.dataset.stat === stats[j - 1]
-              );
+          const { data } = await axios.get(`${baseURL}/${playerLink}`);
+          const playerDom = new JSDOM(data);
+          const playerBatting = playerDom.window.document.querySelector(
+            "#batting_standard > tbody"
+          );
 
-              // If the cell exists, assign its textContent to player
-              if (cell) {
-                if (stats[j - 1] === "3B") {
-                  player["triples"] = Number(cell.textContent?.trim()) || null;
-                } else if (stats[j - 1] === "2B") {
-                  player["doubles"] = Number(cell.textContent?.trim()) || null;
-                } else {
-                  player[stats[j - 1]] =
-                    Number(cell.textContent?.trim()) || null;
+          if (playerBatting) {
+            const playerRows = playerBatting.querySelectorAll("tr");
+
+            for (let i = 1; i < playerRows.length; i++) {
+              const playerRow = playerRows[i];
+              const playerCells = [...playerRow.querySelectorAll("td")];
+
+              if (playerCells.length >= stats.length) {
+                // Create a player object
+                let player: { [key: string]: string | null | Number } = {
+                  name: cells[1].textContent?.trim() || "",
+                  pos: cells[0].textContent?.trim() || "",
+                };
+
+                // Assign each stat a value from the corresponding cell
+                for (let j = 2; j < playerCells.length; j++) {
+                  const cell = playerCells.find(
+                    (cell) => cell.dataset.stat === stats[j - 1]
+                  );
+
+                  // If the cell exists, assign its textContent to player
+                  if (cell) {
+                    if (stats[j - 1] === "3B") {
+                      player["triples"] =
+                        Number(cell.textContent?.trim()) || null;
+                    } else if (stats[j - 1] === "2B") {
+                      player["doubles"] =
+                        Number(cell.textContent?.trim()) || null;
+                    } else {
+                      player[stats[j - 1]] =
+                        Number(cell.textContent?.trim()) || null;
+                    }
+                  }
                 }
+
+                try {
+                  Player.create(player).then(() => {
+                    console.log(player.name);
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+                console.log(player, team, row);
               }
             }
-
-            try {
-              Player.create(player).then(() => {
-                console.log(player.name);
-              });
-            } catch (error) {
-              console.log(error);
-            }
-
-            console.log(player, team);
           }
+
+          await new Promise((resolve) => setTimeout(resolve, 30000));
         }
       } else {
         console.log("Team batting table not found");

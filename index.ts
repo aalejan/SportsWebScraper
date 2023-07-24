@@ -14,18 +14,18 @@ app.get("/", (req, res) => {
 
 testConnection();
 
-// sequelize
-//   .sync({ force: true })
-//   .then(() => {
-//     console.log("Database & models synced successfully.");
+sequelize
+  .sync({ force: true })
+  .then(() => {
+    console.log("Database & models synced successfully.");
 
-//     // Start the cron job here to ensure it only runs after the database sync is complete
-//     // cron.schedule("0 0 * * *", scrapeTeamData);
-//     scrapeTeamData();
-//   })
-//   .catch((err) => {
-//     console.error("Unable to sync the database:", err);
-//   });
+    // Start the cron job here to ensure it only runs after the database sync is complete
+    // cron.schedule("0 0 * * *", scrapeTeamData);
+    scrapeTeamData(); //Only needs to run once a season to get historical data
+  })
+  .catch((err) => {
+    console.error("Unable to sync the database:", err);
+  });
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
