@@ -63,7 +63,7 @@ const mlbTeams = [
   "TBR", // Tampa Bay Rays
   "TEX", // Texas Rangers
   "TOR", // Toronto Blue Jays
-  "WSH", // Washington Nationals
+  "WSN", // Washington Nationals
 ];
 
 const scrapeTeamData = async () => {
@@ -91,7 +91,6 @@ const scrapeTeamData = async () => {
           // Make sure there are enough cells for our data
 
           if (cells.length >= stats.length) {
-            // +2 because we're skipping the first two cells
             // Create a player object
             let player: { [key: string]: string | null | Number } = {
               name: cells[1].textContent?.trim() || "",
