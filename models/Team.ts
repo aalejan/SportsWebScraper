@@ -1,6 +1,7 @@
 // models/Team.ts
 import { DataTypes } from "sequelize";
 import sequelize from "../db";
+import Player from "./Player";
 
 const Team = sequelize.define("Team", {
   id: {
@@ -20,7 +21,8 @@ const Team = sequelize.define("Team", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  // Add more attributes as needed...
 });
+
+Team.hasMany(Player, { foreignKey: "teamId" });
 
 export default Team;

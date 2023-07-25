@@ -4,6 +4,14 @@ import { DataTypes } from "sequelize";
 import sequelize from "../db";
 
 const Player = sequelize.define("Player", {
+  teamId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: "Team",
+      key: "id",
+    },
+    allowNull: false,
+  },
   name: DataTypes.STRING,
   pos: DataTypes.STRING,
   age: DataTypes.INTEGER,

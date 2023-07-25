@@ -69,7 +69,7 @@ const mlbTeams = [
 
 const scrapeTeamData = async () => {
   try {
-    for (const team of mlbTeams) {
+    for (const [index, team] of mlbTeams.entries()) {
       const url = `${baseURL}/teams/${team}/2023.shtml`;
       const { data } = await axios.get(url);
 
@@ -102,7 +102,7 @@ const scrapeTeamData = async () => {
 
           const { data } = await axios.get(`${baseURL}/${playerLink}`);
           const playerDom = new JSDOM(data);
-          const playerBatting = playerDom.window.document.querySelector(
+          const playerBatting = playerDom.window.document?.querySelector(
             "#batting_standard > tbody"
           );
 
@@ -116,6 +116,7 @@ const scrapeTeamData = async () => {
               if (playerCells.length >= stats.length) {
                 // Create a player object
                 let player: { [key: string]: string | null | Number } = {
+                  teamId: index + 1,
                   name: cells[1].textContent?.trim() || "",
                   pos: cells[0].textContent?.trim() || "",
                 };
@@ -151,9 +152,11 @@ const scrapeTeamData = async () => {
                 console.log(player, team, row);
               }
             }
+          } else {
+            continue;
           }
 
-          await new Promise((resolve) => setTimeout(resolve, 30000));
+          await new Promise((resolve) => setTimeout(resolve, 45000));
         }
       } else {
         console.log("Team batting table not found");
