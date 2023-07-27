@@ -48,7 +48,7 @@ const mlbTeams = [
   // "HOU", // Houston Astros
   // "KCR", // Kansas City Royals
   // "LAA", // Los Angeles Angels
-  // "LAD", // Los Angeles Dodgers
+  "LAD", // Los Angeles Dodgers
   "MIA", // Miami Marlins
   "MIL", // Milwaukee Brewers
   "MIN", // Minnesota Twins
@@ -127,7 +127,7 @@ const scrapeTeamData = async () => {
               if (playerCells.length >= stats.length) {
                 // Create a player object
                 let player: { [key: string]: string | null | Number } = {
-                  teamId: index + 15,
+                  teamId: index + 14,
                   name: cells[1].textContent?.trim() || "",
                   pos: cells[0].textContent?.trim() || "",
                 };

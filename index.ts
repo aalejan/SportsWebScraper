@@ -1,6 +1,7 @@
 import express from "express";
 import cron from "node-cron";
 import sequelize, { testConnection } from "./db";
+import playerRouter from "./routes/playerRoutes";
 import scrapeTeamData from "./scraper/scraper";
 
 const app = express();
@@ -12,6 +13,9 @@ app.get("/", (req, res) => {
   res.send("Web scraper is running");
 });
 
+// Mount player router
+app.use("/players", playerRouter);
+
 testConnection();
 
 sequelize
@@ -21,7 +25,7 @@ sequelize
 
     // Start the cron job here to ensure it only runs after the database sync is complete
     // cron.schedule("0 0 * * *", scrapeTeamData);
-    scrapeTeamData(); //Only needs to run once a season to get historical data
+    //scrapeTeamData(); //Only needs to run once a season to get historical data
   })
   .catch((err) => {
     console.error("Unable to sync the database:", err);
