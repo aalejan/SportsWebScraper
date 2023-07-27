@@ -1,7 +1,7 @@
 import axios from "axios";
+import UserAgent from "user-agents"; // Import the user-agents library
 import { JSDOM } from "jsdom";
 import Player from "../models/Player";
-import { resolve } from "path";
 
 const baseURL = "https://www.baseball-reference.com";
 
@@ -35,20 +35,20 @@ const stats = [
 ];
 
 const mlbTeams = [
-  "ARI", // Arizona Diamondbacks
-  "ATL", // Atlanta Braves
-  "BAL", // Baltimore Orioles
-  "BOS", // Boston Red Sox
-  "CHC", // Chicago Cubs
-  "CHW", // Chicago White Sox
-  "CIN", // Cincinnati Reds
-  "CLE", // Cleveland Guardians (formerly Cleveland Indians)
-  "COL", // Colorado Rockies
-  "DET", // Detroit Tigers
-  "HOU", // Houston Astros
-  "KCR", // Kansas City Royals
-  "LAA", // Los Angeles Angels
-  "LAD", // Los Angeles Dodgers
+  // "ARI", // Arizona Diamondbacks
+  // "ATL", // Atlanta Braves
+  // "BAL", // Baltimore Orioles
+  // "BOS", // Boston Red Sox
+  // "CHC", // Chicago Cubs
+  // "CHW", // Chicago White Sox
+  // "CIN", // Cincinnati Reds
+  // "CLE", // Cleveland Guardians (formerly Cleveland Indians)
+  // "COL", // Colorado Rockies
+  // "DET", // Detroit Tigers
+  // "HOU", // Houston Astros
+  // "KCR", // Kansas City Royals
+  // "LAA", // Los Angeles Angels
+  // "LAD", // Los Angeles Dodgers
   "MIA", // Miami Marlins
   "MIL", // Milwaukee Brewers
   "MIN", // Minnesota Twins
@@ -69,9 +69,16 @@ const mlbTeams = [
 
 const scrapeTeamData = async () => {
   try {
+    const userAgent = new UserAgent();
     for (const [index, team] of mlbTeams.entries()) {
       const url = `${baseURL}/teams/${team}/2023.shtml`;
-      const { data } = await axios.get(url);
+      const randomUserAgent = userAgent.random(); // Get a random User-Agent string
+
+      const { data } = await axios.get(url, {
+        headers: {
+          "User-Agent": randomUserAgent.toString(), // Set the User-Agent header in the request
+        },
+      });
 
       const dom = new JSDOM(data);
       const teamBatting = dom.window.document.querySelector(
@@ -100,7 +107,11 @@ const scrapeTeamData = async () => {
 
           const playerLink = playerStatsPage?.href;
 
-          const { data } = await axios.get(`${baseURL}/${playerLink}`);
+          const { data } = await axios.get(`${baseURL}/${playerLink}`, {
+            headers: {
+              "User-Agent": randomUserAgent.toString(), // Set the User-Agent header in the request
+            },
+          });
           const playerDom = new JSDOM(data);
           const playerBatting = playerDom.window.document?.querySelector(
             "#batting_standard > tbody"
@@ -116,7 +127,7 @@ const scrapeTeamData = async () => {
               if (playerCells.length >= stats.length) {
                 // Create a player object
                 let player: { [key: string]: string | null | Number } = {
-                  teamId: index + 1,
+                  teamId: index + 15,
                   name: cells[1].textContent?.trim() || "",
                   pos: cells[0].textContent?.trim() || "",
                 };
@@ -156,7 +167,7 @@ const scrapeTeamData = async () => {
             continue;
           }
 
-          await new Promise((resolve) => setTimeout(resolve, 45000));
+          await new Promise((resolve) => setTimeout(resolve, 60000));
         }
       } else {
         console.log("Team batting table not found");
