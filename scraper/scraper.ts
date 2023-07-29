@@ -48,26 +48,27 @@ const mlbTeams = [
   // "HOU", // Houston Astros
   // "KCR", // Kansas City Royals
   // "LAA", // Los Angeles Angels
-  "LAD", // Los Angeles Dodgers
-  "MIA", // Miami Marlins
-  "MIL", // Milwaukee Brewers
-  "MIN", // Minnesota Twins
-  "NYM", // New York Mets
-  "NYY", // New York Yankees
-  "OAK", // Oakland Athletics
-  "PHI", // Philadelphia Phillies
-  "PIT", // Pittsburgh Pirates
-  "SDP", // San Diego Padres
-  "SFG", // San Francisco Giants
-  "SEA", // Seattle Mariners
-  "STL", // St. Louis Cardinals
-  "TBR", // Tampa Bay Rays
+  // "LAD", // Los Angeles Dodgers
+  // "MIA", // Miami Marlins
+  // "MIL", // Milwaukee Brewers
+  // "MIN", // Minnesota Twins
+  // "NYM", // New York Mets
+  // "NYY", // New York Yankees
+  // "OAK", // Oakland Athletics
+  // "PHI", // Philadelphia Phillies
+  // "PIT", // Pittsburgh Pirates
+  // "SDP", // San Diego Padres
+  // "SFG", // San Francisco Giants
+  // "SEA", // Seattle Mariners
+  // "STL", // St. Louis Cardinals
+  // "TBR", // Tampa Bay Rays
   "TEX", // Texas Rangers
   "TOR", // Toronto Blue Jays
   "WSN", // Washington Nationals
 ];
 
 const scrapeTeamData = async () => {
+  const startTime = Date.now();
   try {
     const userAgent = new UserAgent();
     for (const [index, team] of mlbTeams.entries()) {
@@ -127,7 +128,7 @@ const scrapeTeamData = async () => {
               if (playerCells.length >= stats.length) {
                 // Create a player object
                 let player: { [key: string]: string | null | Number } = {
-                  teamId: index + 14,
+                  teamId: index + 28,
                   name: cells[1].textContent?.trim() || "",
                   pos: cells[0].textContent?.trim() || "",
                 };
@@ -167,7 +168,7 @@ const scrapeTeamData = async () => {
             continue;
           }
 
-          await new Promise((resolve) => setTimeout(resolve, 60000));
+          await new Promise((resolve) => setTimeout(resolve, 90000));
         }
       } else {
         console.log("Team batting table not found");
@@ -176,6 +177,8 @@ const scrapeTeamData = async () => {
     }
   } catch (error) {
     console.error(`Error scraping data : ${error}`);
+    console.log(startTime);
+    console.log(Date.now());
   }
 };
 

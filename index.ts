@@ -25,7 +25,7 @@ sequelize
 
     // Start the cron job here to ensure it only runs after the database sync is complete
     // cron.schedule("0 0 * * *", scrapeTeamData);
-    //scrapeTeamData(); //Only needs to run once a season to get historical data
+    scrapeTeamData(); //Only needs to run once a season to get historical data
   })
   .catch((err) => {
     console.error("Unable to sync the database:", err);
